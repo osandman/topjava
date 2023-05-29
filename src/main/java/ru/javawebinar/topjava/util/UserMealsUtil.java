@@ -3,6 +3,7 @@ package ru.javawebinar.topjava.util;
 import ru.javawebinar.topjava.model.UserMeal;
 import ru.javawebinar.topjava.model.UserMealWithExcess;
 
+import java.lang.reflect.Field;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
@@ -32,6 +33,12 @@ public class UserMealsUtil {
         filteredByStreams(meals, LocalTime.of(7, 0), LocalTime.of(12, 0), 2000)
                 .forEach(System.out::println);
         filteredByCycles(meals, LocalTime.of(0, 0), LocalTime.of(12, 00), 2000)
+                .forEach(System.out::println);
+
+        System.out.println("filteredByOneCycle");
+        filteredByCycleOpt(meals, LocalTime.of(7, 0), LocalTime.of(12, 0), 2000)
+                .forEach(System.out::println);
+        filteredByCycleOpt(meals, LocalTime.of(0, 0), LocalTime.of(12, 00), 2000)
                 .forEach(System.out::println);
     }
 
@@ -63,5 +70,37 @@ public class UserMealsUtil {
                 .map(el -> new UserMealWithExcess(el.getDateTime(), el.getDescription(), el.getCalories(),
                         caloriesByDays.get(el.getDateTime().toLocalDate()) > caloriesPerDay))
                 .collect(Collectors.toList());
+    }
+
+    // Return filtered list with excess. Implement by one cycle
+    public static List<UserMealWithExcess> filteredByCycleOpt(List<UserMeal> meals, LocalTime startTime, LocalTime endTime, int caloriesPerDay) {
+        Map<LocalDate, Integer> caloriesByDays = new HashMap<>();
+        Map<LocalDate, List<UserMealWithExcess>> excessDays = new HashMap<>();
+        List<UserMealWithExcess> userMealWithExcessList = new ArrayList<>();
+        for (UserMeal userMeal : meals) {
+            LocalDate currentDay = userMeal.getDateTime().toLocalDate();
+            caloriesByDays.merge(currentDay, userMeal.getCalories(), Integer::sum);
+            excessDays.putIfAbsent(currentDay, new ArrayList<>());
+            boolean excess = caloriesByDays.get(currentDay) > caloriesPerDay;
+            if (TimeUtil.isBetweenHalfOpen(userMeal.getDateTime().toLocalTime(), startTime, endTime)) {
+                UserMealWithExcess currentMealWithExcess = new UserMealWithExcess(userMeal.getDateTime(), userMeal.getDescription(),
+                        userMeal.getCalories(), excess);
+                userMealWithExcessList.add(currentMealWithExcess);
+                excessDays.get(currentDay).add(currentMealWithExcess);
+            }
+            List<UserMealWithExcess> toChange = excessDays.get(currentDay);
+            if (toChange != null) {
+                for (UserMealWithExcess userMealWithExcess : toChange) {
+                    try {
+                        Field excessField = UserMealWithExcess.class.getDeclaredField("excess");
+                        excessField.setAccessible(true);
+                        excessField.setBoolean(userMealWithExcess, excess);
+                    } catch (IllegalAccessException | NoSuchFieldException e) {
+                        throw new RuntimeException(e);
+                    }
+                }
+            }
+        }
+        return userMealWithExcessList;
     }
 }
