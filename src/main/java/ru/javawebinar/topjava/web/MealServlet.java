@@ -20,15 +20,15 @@ import static org.slf4j.LoggerFactory.getLogger;
 public class MealServlet extends HttpServlet {
     private static final Logger log = getLogger(MealServlet.class);
     private static final String SHOW_MEALS_JSP = "/meals.jsp";
-    private static final String EDIT_MEALS_JSP = "/edit_meal.jsp";
+    private static final String EDIT_MEALS_JSP = "/editMeal.jsp";
     private static final String SHOW_MEALS_SERVLET = "/meals";
+    private static final int CALORIES_EXCESS = 2000;
     private final static DateTimeFormatter DATE_TIME_FORMATTER = getDateTimeFormatter();
     private MealDao mealDao;
 
     @Override
     public void init() throws ServletException {
         mealDao = new MemoryMealDao();
-        loadTestValues();
     }
 
     @Override
@@ -49,24 +49,27 @@ public class MealServlet extends HttpServlet {
                 mealId = Integer.parseInt(req.getParameter("id"));
                 forwardUrl = EDIT_MEALS_JSP;
                 Meal editMeal = mealDao.getById(mealId);
-                req.setAttribute("meal", editMeal);
+                String mealAttr = "meal";
+                req.setAttribute(mealAttr, editMeal);
+                log.debug("set attribute \"{}\" to edit {}", mealAttr, editMeal);
                 break;
             case "add":
                 forwardUrl = EDIT_MEALS_JSP;
+                String dateTimeAttr = "currentDateTime";
+                req.setAttribute(dateTimeAttr, LocalDateTime.now().format(DATE_TIME_FORMATTER));
+                log.debug("prepare to add meal, set attribute \"{}\"", dateTimeAttr);
                 break;
             default:
                 forwardUrl = SHOW_MEALS_JSP;
-                setAttributesForMealsShow(req);
+                String formatterAttr = "dtFormatter";
+                String mealTosAttr = "mealTos";
+                req.setAttribute(formatterAttr, DATE_TIME_FORMATTER);
+                req.setAttribute(mealTosAttr, MealsUtil.filteredByStreams(mealDao.getAll(), CALORIES_EXCESS));
+                log.debug("prepare to show list meals, set attributes: \"{}\", \"{}\"", formatterAttr, mealTosAttr);
                 break;
         }
         req.getRequestDispatcher(forwardUrl).forward(req, resp);
         log.debug("forward to {}", forwardUrl);
-    }
-
-    private void setAttributesForMealsShow(HttpServletRequest req) {
-        final int caloriesExcess = 2000;
-        req.setAttribute("dtFormatter", DATE_TIME_FORMATTER);
-        req.setAttribute("mealsTo", MealsUtil.filteredByStreams(mealDao.getAllMeals(), caloriesExcess));
     }
 
     @Override
@@ -79,7 +82,7 @@ public class MealServlet extends HttpServlet {
         String mealId = req.getParameter("id");
         if (mealId != null && !mealId.isEmpty()) {
             Meal editMeal = mealDao.update(new Meal(Integer.parseInt(mealId), dateTime, description, calories));
-            log.debug("update meal: {}", editMeal.toString());
+            log.debug("update meal: {}", editMeal);
         } else {
             Meal newMeal = mealDao.add(new Meal(dateTime, description, calories));
             log.debug("add meal: {}", newMeal);
@@ -88,12 +91,7 @@ public class MealServlet extends HttpServlet {
         log.debug("redirect to {}", SHOW_MEALS_SERVLET);
     }
 
-    public void loadTestValues() {
-        MealsUtil.getTestMeals().forEach(meal -> mealDao.add(meal));
-    }
-
     private static DateTimeFormatter getDateTimeFormatter() {
-        final String DATE_TIME_PATTERN = "dd-MM-yyyy HH:mm";
-        return DateTimeFormatter.ofPattern(DATE_TIME_PATTERN);
+        return DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
     }
 }

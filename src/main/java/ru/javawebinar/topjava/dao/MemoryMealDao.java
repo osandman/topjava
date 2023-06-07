@@ -1,6 +1,7 @@
 package ru.javawebinar.topjava.dao;
 
 import ru.javawebinar.topjava.model.Meal;
+import ru.javawebinar.topjava.util.MealsUtil;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -14,11 +15,11 @@ public class MemoryMealDao implements MealDao {
 
     public MemoryMealDao() {
         storage = new ConcurrentHashMap<>();
-        idCounter.set(0);
+        loadTestValues();
     }
 
     @Override
-    public List<Meal> getAllMeals() {
+    public List<Meal> getAll() {
         return new ArrayList<>(storage.values());
     }
 
@@ -29,19 +30,23 @@ public class MemoryMealDao implements MealDao {
 
     @Override
     public Meal update(Meal meal) {
-        storage.put(meal.getId(), meal);
-        return storage.get(meal.getId());
+        return storage.computeIfPresent(meal.getId(), (id, prevMeal) -> meal);
     }
 
     @Override
     public Meal add(Meal meal) {
-        meal.setId(idCounter.incrementAndGet());
-        storage.put(idCounter.get(), meal);
-        return storage.get(idCounter.get());
+        return storage.computeIfAbsent(idCounter.incrementAndGet(), id -> {
+            meal.setId(id);
+            return meal;
+        });
     }
 
     @Override
     public Meal getById(int id) {
         return storage.get(id);
+    }
+
+    private void loadTestValues() {
+        MealsUtil.getTestMeals().forEach(this::add);
     }
 }

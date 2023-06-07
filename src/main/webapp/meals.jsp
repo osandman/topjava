@@ -14,7 +14,6 @@
 <table>
     <thead>
     <tr>
-        <%--        <th scope="col">id</th>--%>
         <th scope="col">Date</th>
         <th scope="col">Description</th>
         <th scope="col">Calories</th>
@@ -23,13 +22,12 @@
     </tr>
     </thead>
     <tbody>
-    <jsp:useBean id="mealsTo" scope="request"
+    <jsp:useBean id="mealTos" scope="request"
                  type="java.util.List<ru.javawebinar.topjava.model.MealTo>"/>
     <jsp:useBean id="dtFormatter" scope="request"
                  type="java.time.format.DateTimeFormatter"/>
-    <c:forEach var="mealTo" items="${mealsTo}">
+    <c:forEach var="mealTo" items="${mealTos}">
         <tr class="${mealTo.excess ? "isExcess": "notExcess"}">
-                <%--            <td>${mealTo.id}</td>--%>
             <td>${mealTo.dateTime.format(dtFormatter)}</td>
             <td>${mealTo.description}</td>
             <td>${mealTo.calories}</td>

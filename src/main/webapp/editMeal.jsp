@@ -11,35 +11,34 @@
 <h3><a href="index.html">Home</a></h3>
 <hr>
 <h2>
-    <c:if test="${requestScope.meal != null}">
-        <span>Edit meal</span>
-        <jsp:useBean id="meal" scope="request"
-                     type="ru.javawebinar.topjava.model.Meal"/>
-    </c:if>
-    <c:if test="${meal == null}">
-        <span>Add meal</span>
-    </c:if>
+    <c:choose>
+        <c:when test="${requestScope.meal != null}">
+            <span>Edit meal</span>
+            <jsp:useBean id="meal" scope="request" type="ru.javawebinar.topjava.model.Meal"/>
+        </c:when>
+        <c:otherwise>
+            <span>Add meal</span>
+        </c:otherwise>
+    </c:choose>
 </h2>
 <form method="POST"
-      action="${pageContext.request.contextPath}/meals?id=${meal.id}"
+      action="${pageContext.request.contextPath}/meals"
       name="formEditMeal">
-    <%--    <label for="mealId">Meal ID:</label>--%>
-    <%--    <input type="text" readonly="readonly" id="mealId"--%>
-    <%--           value=${meal.id}>--%>
-    <%--    <p>--%>
+    <input type="hidden" name="id" id="mealId"
+           value="${meal.id}">
     <label for="dateTimeId">Date time:</label>
     <input type="datetime-local" name="dateTime" id="dateTimeId" required
-           value=${meal.dateTime}>
+           value="${meal != null ? meal.dateTime : requestScope.currentDateTime}"/>
     <p>
         <label for="descrId">Description:</label>
         <input type="text" name="description" id="descrId" required
-               value="${meal.description}">
+               value="${meal.description}"/>
     <p>
         <label for="caloriesId">Calories:</label>
         <input type="number" name="calories" id="caloriesId" required
-               value=${meal.calories}>
+               value="${meal.calories}"/>
     <p>
-        <input type="submit" value="Save">
+        <input type="submit" value="Save"/>
         <button onclick="window.history.back()" type="button">Cancel</button>
 </form>
 </body>
