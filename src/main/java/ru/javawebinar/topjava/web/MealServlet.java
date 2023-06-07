@@ -23,7 +23,7 @@ public class MealServlet extends HttpServlet {
     private static final String EDIT_MEALS_JSP = "/editMeal.jsp";
     private static final String SHOW_MEALS_SERVLET = "/meals";
     private static final int CALORIES_EXCESS = 2000;
-    private final static DateTimeFormatter DATE_TIME_FORMATTER = getDateTimeFormatter();
+    private static final DateTimeFormatter DATE_TIME_FORMATTER = getDateTimeFormatter();
     private MealDao mealDao;
 
     @Override

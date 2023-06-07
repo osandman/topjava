@@ -18,6 +18,10 @@ public class MemoryMealDao implements MealDao {
         loadTestValues();
     }
 
+    private void loadTestValues() {
+        MealsUtil.getTestMeals().forEach(this::add);
+    }
+
     @Override
     public List<Meal> getAll() {
         return new ArrayList<>(storage.values());
@@ -35,18 +39,14 @@ public class MemoryMealDao implements MealDao {
 
     @Override
     public Meal add(Meal meal) {
-        return storage.computeIfAbsent(idCounter.incrementAndGet(), id -> {
-            meal.setId(id);
-            return meal;
-        });
+        int newId = idCounter.incrementAndGet();
+        meal.setId(newId);
+        storage.put(newId, meal);
+        return storage.get(newId);
     }
 
     @Override
     public Meal getById(int id) {
         return storage.get(id);
-    }
-
-    private void loadTestValues() {
-        MealsUtil.getTestMeals().forEach(this::add);
     }
 }
