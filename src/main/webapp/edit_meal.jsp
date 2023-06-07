@@ -1,4 +1,4 @@
-<%@ page contentType="text/html;charset=UTF-8" pageEncoding="utf-8" %>
+<%@ page contentType="text/html;charset=UTF-8" pageEncoding="UTF-8" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>
@@ -21,31 +21,26 @@
     </c:if>
 </h2>
 <form method="POST"
-      action="${pageContext.request.contextPath}/meals?action=show&id=${meal.id}"
+      action="${pageContext.request.contextPath}/meals?id=${meal.id}"
       name="formEditMeal">
     <%--    <label for="mealId">Meal ID:</label>--%>
     <%--    <input type="text" readonly="readonly" id="mealId"--%>
     <%--           value=${meal.id}>--%>
     <%--    <p>--%>
     <label for="dateTimeId">Date time:</label>
-    <input type="datetime-local" name="dateTime" id="dateTimeId"
+    <input type="datetime-local" name="dateTime" id="dateTimeId" required
            value=${meal.dateTime}>
     <p>
         <label for="descrId">Description:</label>
-        <input type="text" name="description" id="descrId"
+        <input type="text" name="description" id="descrId" required
                value="${meal.description}">
     <p>
         <label for="caloriesId">Calories:</label>
-        <input type="text" name="calories" id="caloriesId"
+        <input type="number" name="calories" id="caloriesId" required
                value=${meal.calories}>
     <p>
         <input type="submit" value="Save">
         <button onclick="window.history.back()" type="button">Cancel</button>
-
-        <c:if test="${requestScope.error != null}">
-    <p>
-        <span>${requestScope.error}</span>
-        </c:if>
 </form>
 </body>
 </html>

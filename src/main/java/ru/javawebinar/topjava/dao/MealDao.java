@@ -6,15 +6,15 @@ import ru.javawebinar.topjava.model.MealTo;
 import java.util.List;
 
 public interface MealDao {
-    List<MealTo> getAllMealTos();
+    List<Meal> getAllMeals();
 
-    boolean delete(Integer id);
+    boolean delete(int id);
 
-    Integer update(Meal meal);
+    Meal update(Meal meal);
 
-    Integer add(Meal meal);
+    Meal add(Meal meal);
 
-    Meal getById(Integer id);
+    Meal getById(int id);
 
     default void loadTestValues() {
     }
