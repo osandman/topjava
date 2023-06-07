@@ -42,7 +42,7 @@ public class MemoryMealDao implements MealDao {
         int newId = idCounter.incrementAndGet();
         meal.setId(newId);
         storage.put(newId, meal);
-        return storage.get(newId);
+        return meal;
     }
 
     @Override
