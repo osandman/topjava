@@ -14,13 +14,13 @@ import java.util.stream.Collectors;
 @Repository
 public class InMemoryUserRepository implements UserRepository {
     private static final Logger log = LoggerFactory.getLogger(InMemoryUserRepository.class);
-    private final Map<Integer, User> storage = new ConcurrentHashMap<>();
+    private final Map<Integer, User> userStorage = new ConcurrentHashMap<>();
     private final AtomicInteger idCounter = new AtomicInteger();
 
     @Override
     public boolean delete(int id) {
         log.info("delete {}", id);
-        return storage.remove(id) != null;
+        return userStorage.remove(id) != null;
     }
 
     @Override
@@ -28,33 +28,31 @@ public class InMemoryUserRepository implements UserRepository {
         log.info("save {}", user);
         if (user.isNew()) {
             user.setId(idCounter.incrementAndGet());
-            storage.put(user.getId(), user);
+            userStorage.put(user.getId(), user);
         }
-        return storage.computeIfPresent(user.getId(), (id, prevUser) -> user);
+        return userStorage.computeIfPresent(user.getId(), (id, prevUser) -> user);
     }
 
     @Override
     public User get(int id) {
         log.info("get {}", id);
-        return storage.get(id);
+        return userStorage.get(id);
     }
 
     @Override
     public List<User> getAll() {
         log.info("getAll");
-        return new ArrayList<>(storage.values()).stream()
-                .sorted(Comparator.comparing(User::getName))
+        return new ArrayList<>(userStorage.values()).stream()
+                .sorted(Comparator.comparing(User::getName).thenComparing(User::getEmail))
                 .collect(Collectors.toList());
     }
 
     @Override
     public User getByEmail(String email) {
         log.info("getByEmail {}", email);
-        for (User user : storage.values()) {
-            if (user.getEmail().equals(email)) {
-                return user;
-            }
-        }
-        return null;
+        return userStorage.values().stream()
+                .filter(user -> user.getEmail().equals(email))
+                .findAny()
+                .orElse(null);
     }
 }
