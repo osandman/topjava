@@ -21,17 +21,12 @@ public class Meal extends AbstractBaseEntity {
         this.calories = calories;
     }
 
-    public void setIds(Integer id, Integer userId) {
-        super.setId(id);
+    public void setUserId(Integer userId) {
         this.userId = userId;
     }
 
     public int getUserId() {
         return userId;
-    }
-
-    public void setUserId(int userId) {
-        this.userId = userId;
     }
 
     public LocalDateTime getDateTime() {
