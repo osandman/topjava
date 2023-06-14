@@ -18,9 +18,37 @@
 </head>
 <body>
 <section>
-    <h3><a href="index.html">Home</a></h3>
+    <h3><a href="${pageContext.request.contextPath}">Home</a></h3>
     <hr/>
     <h2>Meals</h2>
+    <form method="post" action="meals" name="filter">
+        <input type="hidden" name="filter" value="">
+        <table>
+            <tr>
+                <td>Date from:</td>
+                <td>Date to:</td>
+                <td>Time from:</td>
+                <td>Time to:</td>
+            </tr>
+            <tr>
+
+                <td><label>
+                    <input type="date" name="fromDate" value="${requestScope.startDay}">
+                </label></td>
+                <td><label>
+                    <input type="date" name="toDate" value="${requestScope.endDay}">
+                </label></td>
+                <td><label>
+                    <input type="time" name="fromTime" value="${requestScope.startTime}">
+                </label></td>
+                <td><label>
+                    <input type="time" name="toTime" value="${requestScope.endTime}">
+                </label></td>
+            </tr>
+        </table>
+        <button type="submit">Filter</button>
+    </form>
+    <br>
     <a href="meals?action=create">Add Meal</a>
     <br><br>
     <table border="1" cellpadding="8" cellspacing="0">

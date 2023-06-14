@@ -6,6 +6,7 @@ import ru.javawebinar.topjava.repository.MealRepository;
 import ru.javawebinar.topjava.util.DateTimeUtil;
 import ru.javawebinar.topjava.util.MealsUtil;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.Month;
 import java.util.Comparator;
@@ -16,15 +17,15 @@ import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
-@Repository
+@Repository(value = "inMemoryMealRepository")
 public class InMemoryMealRepository implements MealRepository {
     private final Map<Integer, Meal> repository = new ConcurrentHashMap<>();
     private final AtomicInteger counter = new AtomicInteger(0);
 
     {
         MealsUtil.meals.forEach(meal -> save(meal, 1));
-        save(new Meal(LocalDateTime.of(2021, Month.MAY, 30, 20, 0), "Ужин", 500), 2);
-        save(new Meal(LocalDateTime.of(2021, Month.MAY, 30, 10, 30), "Завтрак", 1500), 2);
+        save(new Meal(LocalDateTime.of(2023, Month.JUNE, 28, 20, 0), "Ужин2", 500), 2);
+        save(new Meal(LocalDateTime.of(2023, Month.JUNE, 28, 10, 30), "Завтрак2", 1500), 2);
     }
 
     @Override
