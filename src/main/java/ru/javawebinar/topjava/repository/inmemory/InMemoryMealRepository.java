@@ -17,7 +17,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
-@Repository(value = "inMemoryMealRepository")
+@Repository
 public class InMemoryMealRepository implements MealRepository {
     private final Map<Integer, Meal> repository = new ConcurrentHashMap<>();
     private final AtomicInteger counter = new AtomicInteger(0);
@@ -36,6 +36,12 @@ public class InMemoryMealRepository implements MealRepository {
             repository.put(meal.getId(), meal);
             return meal;
         }
+        // TODO оптимизировать
+        // апдейт - между repository.get(meal.getId()) и repository.put(meal.getId(), meal),
+        // чтобы апдейт прошел корректно, не должно измениться то, что проверяем в условии стр. 41.
+        // Это наличие записи и принадлежность ее этому юзеру. Принадлежность поменяться в принципе не может,
+        // а в случае, если запись удалится, можно использовать метод ...IfAbsent, в котором атомарно еще раз
+        // проверится наличие и вставится новая запись. И тогда можно обойтись без блока synchronized
         synchronized (repository) {
             Meal updMeal = repository.get(meal.getId());
             if (updMeal != null && updMeal.getUserId() == userId) {
@@ -67,8 +73,8 @@ public class InMemoryMealRepository implements MealRepository {
     }
 
     @Override
-    public List<Meal> getFiltered(int userId, LocalDateTime start, LocalDateTime end) {
-        return filterByPredicate(userId, meal -> DateTimeUtil.isBetweenHalfOpen(meal.getDateTime(), start, end));
+    public List<Meal> getFiltered(int userId, LocalDate start, LocalDate end) {
+        return filterByPredicate(userId, meal -> DateTimeUtil.isBetweenHalfOpen(meal.getDate(), start, end));
     }
 
     private List<Meal> filterByPredicate(int userId, Predicate<Meal> addFilter) {

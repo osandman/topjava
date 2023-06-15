@@ -21,7 +21,7 @@
     <h3><a href="${pageContext.request.contextPath}">Home</a></h3>
     <hr/>
     <h2>Meals</h2>
-    <form method="post" action="meals" name="filter">
+    <form method="get" action="meals" name="filter">
         <input type="hidden" name="filter" value="">
         <table>
             <tr>
@@ -33,16 +33,16 @@
             <tr>
 
                 <td><label>
-                    <input type="date" name="fromDate" value="${requestScope.startDay}">
+                    <input type="date" name="fromDate" value="${param.fromDate}">
                 </label></td>
                 <td><label>
-                    <input type="date" name="toDate" value="${requestScope.endDay}">
+                    <input type="date" name="toDate" value="${param.toDate}">
                 </label></td>
                 <td><label>
-                    <input type="time" name="fromTime" value="${requestScope.startTime}">
+                    <input type="time" name="fromTime" value="${param.fromTime}">
                 </label></td>
                 <td><label>
-                    <input type="time" name="toTime" value="${requestScope.endTime}">
+                    <input type="time" name="toTime" value="${param.toTime}">
                 </label></td>
             </tr>
         </table>

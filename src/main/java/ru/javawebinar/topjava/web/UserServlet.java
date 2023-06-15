@@ -17,11 +17,17 @@ import static org.slf4j.LoggerFactory.getLogger;
 public class UserServlet extends HttpServlet {
     private static final Logger log = getLogger(UserServlet.class);
     private ProfileRestController profileRestController;
+    private ConfigurableApplicationContext context;
 
     @Override
     public void init() throws ServletException {
-        ConfigurableApplicationContext context = new ClassPathXmlApplicationContext("spring/spring-app.xml");
+        context = new ClassPathXmlApplicationContext("spring/spring-app.xml");
         profileRestController = context.getBean(ProfileRestController.class);
+    }
+
+    @Override
+    public void destroy() {
+        context.close();
     }
 
     @Override
