@@ -7,11 +7,12 @@ import org.springframework.stereotype.Controller;
 import ru.javawebinar.topjava.model.Meal;
 import ru.javawebinar.topjava.service.MealService;
 import ru.javawebinar.topjava.to.MealTo;
+import ru.javawebinar.topjava.util.DateTimeUtil;
+import ru.javawebinar.topjava.util.MealsUtil;
 import ru.javawebinar.topjava.web.SecurityUtil;
 
 import java.time.LocalDateTime;
 import java.time.LocalTime;
-import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
 import java.util.List;
 
@@ -29,21 +30,24 @@ public class MealRestController {
 
     public List<MealTo> getAll() {
         log.info("getAll");
-        return service.getTos(SecurityUtil.authUserId(), SecurityUtil.authUserCaloriesPerDay());
+        List<Meal> allMeals = service.getAll(SecurityUtil.authUserId());
+        return MealsUtil.getTos(allMeals, SecurityUtil.authUserCaloriesPerDay());
     }
 
     public List<MealTo> getFiltered(String startDay, String endDay, String startTime, String endTime) throws DateTimeParseException {
         log.info("getFiltered");
         LocalDateTime start = parseLocalDate(startDay, startTime, true);
         LocalDateTime end = parseLocalDate(endDay, endTime, false);
-        return service.getFilteredTos(SecurityUtil.authUserId(), SecurityUtil.authUserCaloriesPerDay(), start, end.plusDays(1));
+        List<Meal> mealsFilteredByDate = service.getFilteredByDays(SecurityUtil.authUserId(),
+                start.toLocalDate(), end.toLocalDate().plusDays(1));
+        return MealsUtil.getFilteredTos(mealsFilteredByDate, SecurityUtil.authUserCaloriesPerDay(),
+                start.toLocalTime(), end.toLocalTime());
     }
 
     private static LocalDateTime parseLocalDate(String date, String time, boolean isStart) throws DateTimeParseException {
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
         date = date.isEmpty() ? (isStart ? "0001-01-01" : "9999-12-30") : date;
         time = time.isEmpty() ? (isStart ? LocalTime.MIN.toString() : LocalTime.MAX.toString().substring(0, 5)) : time;
-        return LocalDateTime.parse(date + " " + time, formatter);
+        return LocalDateTime.parse(date + " " + time, DateTimeUtil.DATE_TIME_FORMATTER);
     }
 
     public Meal get(int id) {
@@ -63,7 +67,9 @@ public class MealRestController {
     }
 
     public void update(Meal meal) {
-        log.info("update {}", meal);
+        int userId = SecurityUtil.authUserId();
+        log.info("update {} for user ID {}", meal, userId);
+//        assureIdConsistent(meal, userId);
         service.update(meal, SecurityUtil.authUserId());
     }
 }

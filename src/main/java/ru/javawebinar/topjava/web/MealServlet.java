@@ -54,20 +54,6 @@ public class MealServlet extends HttpServlet {
 
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-
-        if (request.getParameter("filter") != null) {
-            try {
-                request.setAttribute("meals",
-                        controller.getFiltered(request.getParameter("fromDate"),
-                                request.getParameter("toDate"),
-                                request.getParameter("fromTime"),
-                                request.getParameter("toTime")));
-                request.getRequestDispatcher("/meals.jsp").forward(request, response);
-                return;
-            } catch (DateTimeParseException ignored) {
-            }
-        }
-
         String action = request.getParameter("action");
         switch (action == null ? "all" : action) {
             case "delete":
@@ -84,6 +70,17 @@ public class MealServlet extends HttpServlet {
                 request.setAttribute("meal", meal);
                 request.getRequestDispatcher("/mealForm.jsp").forward(request, response);
                 break;
+            case "filter":
+                try {
+                    request.setAttribute("meals",
+                            controller.getFiltered(request.getParameter("fromDate"),
+                                    request.getParameter("toDate"),
+                                    request.getParameter("fromTime"),
+                                    request.getParameter("toTime")));
+                    request.getRequestDispatcher("/meals.jsp").forward(request, response);
+                    break;
+                } catch (DateTimeParseException ignored) {
+                }
             case "all":
             default:
                 log.info("getAll");

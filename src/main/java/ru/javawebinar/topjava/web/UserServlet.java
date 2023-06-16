@@ -21,6 +21,10 @@ public class UserServlet extends HttpServlet {
 
     @Override
     public void init() throws ServletException {
+        // TODO расшарить контекст из MealServlet
+        //  UserServlet - обращу внимание: в UserServlet и MealServlet - два разных Spring-контекста.
+        //  Если из них достать одноименные бины, то это будут разные объекты. Если бы в UserServlet тоже
+        //  нужен был бы контекст, надо было бы его шарить через ServletContext.
         context = new ClassPathXmlApplicationContext("spring/spring-app.xml");
         profileRestController = context.getBean(ProfileRestController.class);
     }

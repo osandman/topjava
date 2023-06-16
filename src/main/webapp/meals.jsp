@@ -21,8 +21,8 @@
     <h3><a href="${pageContext.request.contextPath}">Home</a></h3>
     <hr/>
     <h2>Meals</h2>
-    <form method="get" action="meals" name="filter">
-        <input type="hidden" name="filter" value="">
+    <form method="get" action="meals">
+        <input type="hidden" name="action" value="filter">
         <table>
             <tr>
                 <td>Date from:</td>
@@ -31,7 +31,6 @@
                 <td>Time to:</td>
             </tr>
             <tr>
-
                 <td><label>
                     <input type="date" name="fromDate" value="${param.fromDate}">
                 </label></td>

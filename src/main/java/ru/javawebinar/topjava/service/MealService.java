@@ -4,10 +4,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import ru.javawebinar.topjava.model.Meal;
 import ru.javawebinar.topjava.repository.MealRepository;
-import ru.javawebinar.topjava.to.MealTo;
-import ru.javawebinar.topjava.util.MealsUtil;
 
-import java.time.LocalDateTime;
+import java.time.LocalDate;
 import java.util.List;
 
 import static ru.javawebinar.topjava.util.ValidationUtil.checkNotFoundWithId;
@@ -37,12 +35,11 @@ public class MealService {
         checkNotFoundWithId(repository.save(meal, userId), meal.getId());
     }
 
-    public List<MealTo> getTos(int userId, int caloriesPerDay) {
-        return MealsUtil.getTos(repository.getAll(userId), caloriesPerDay);
+    public List<Meal> getAll(int userId) {
+        return repository.getAll(userId);
     }
 
-    public List<MealTo> getFilteredTos(int userId, int caloriesPerDay, LocalDateTime start, LocalDateTime end) {
-        return MealsUtil.getFilteredTos(repository.getFiltered(userId, start.toLocalDate(), end.toLocalDate()), caloriesPerDay,
-                start.toLocalTime(), end.toLocalTime());
+    public List<Meal> getFilteredByDays(int userId, LocalDate start, LocalDate end) {
+        return repository.getFiltered(userId, start, end);
     }
 }

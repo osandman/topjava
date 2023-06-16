@@ -49,7 +49,7 @@ public class InMemoryUserRepository implements UserRepository {
     @Override
     public List<User> getAll() {
         log.info("getAll");
-        return new ArrayList<>(userStorage.values()).stream()
+        return userStorage.values().stream()
                 .sorted(Comparator.comparing(User::getName).thenComparing(User::getEmail))
                 .collect(Collectors.toList());
     }
