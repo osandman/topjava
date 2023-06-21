@@ -15,7 +15,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 public class MealTestData {
     public static final int START_MEAL_ID = UserTestData.GUEST_ID + 1;
     public static final Meal userMeal1 = new Meal(START_MEAL_ID, LocalDateTime.of(2023, Month.JUNE, 29, 10, 0), "Завтрак", 500);
-    public static final Meal duplicatedUserMeal1 = new Meal(null, LocalDateTime.of(2023, Month.JUNE, 29, 10, 0), "Двойной Завтрак", 500);
+    public static final Meal duplicatedUserMeal1 = new Meal(null, userMeal1.getDateTime(), "Двойной Завтрак", 500);
     public static final Meal userMeal2 = new Meal(START_MEAL_ID + 1, LocalDateTime.of(2023, Month.JUNE, 29, 13, 0), "Обед", 1000);
     public static final Meal userMeal3 = new Meal(START_MEAL_ID + 2, LocalDateTime.of(2023, Month.JUNE, 29, 20, 0), "Ужин", 500);
     public static final Meal userMeal4 = new Meal(START_MEAL_ID + 3, LocalDateTime.of(2023, Month.JUNE, 30, 0, 0), "Еда на граничное значение", 100);
@@ -29,6 +29,12 @@ public class MealTestData {
     public static final List<Meal> userMeals = new ArrayList<>(Arrays.asList(userMeal1, userMeal2, userMeal3,
             userMeal4, userMeal5, userMeal6, userMeal7));
     public static final List<Meal> userMealsOf2023Jun29 = new ArrayList<>(Arrays.asList(userMeal1, userMeal2, userMeal3));
+
+    public static List<Meal> sortByDateTimeReversed(List<Meal> meals) {
+        return meals.stream()
+                .sorted(Comparator.comparing(Meal::getDateTime).reversed())
+                .collect(Collectors.toList());
+    }
 
     public static Meal getNewMeal() {
         return new Meal(LocalDateTime.of(2023, Month.JANUARY, 1, 0, 0),
@@ -45,7 +51,7 @@ public class MealTestData {
 
     public static Meal getUpdatedDuplicatedMeal() {
         Meal updated = new Meal(userMeal2);
-        updated.setDateTime(LocalDateTime.of(2023, Month.JUNE, 29, 20, 0));
+        updated.setDateTime(userMeal3.getDateTime());
         updated.setDescription("Ужин дубль");
         updated.setCalories(555);
         return updated;
@@ -56,10 +62,6 @@ public class MealTestData {
     }
 
     public static void assertMatch(List<Meal> actual, List<Meal> expected) {
-        assertThat(actual)
-                .usingRecursiveFieldByFieldElementComparator()
-                .isEqualTo(expected.stream()
-                        .sorted(Comparator.comparing(Meal::getDateTime).reversed())
-                        .collect(Collectors.toList()));
+        assertThat(actual).usingRecursiveFieldByFieldElementComparator().isEqualTo(expected);
     }
 }

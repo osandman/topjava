@@ -1,7 +1,5 @@
 package ru.javawebinar.topjava.service;
 
-import org.junit.After;
-import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.slf4j.bridge.SLF4JBridgeHandler;
@@ -37,15 +35,7 @@ public class MealServiceTest {
     }
 
     @Autowired
-    MealService service;
-
-    @Before
-    public void setUp() throws Exception {
-    }
-
-    @After
-    public void tearDown() throws Exception {
-    }
+    private MealService service;
 
     @Test
     public void findedMealIsMatch() {
@@ -64,21 +54,22 @@ public class MealServiceTest {
     }
 
     @Test
-    public void deleteWithoutException() {
+    public void deleteWithMatchExceptions() {
         assertThatNoException().isThrownBy(() -> service.delete(adminMeal1.getId(), ADMIN_ID));
+        assertThrows(NotFoundException.class, () -> service.get(adminMeal1.getId(), ADMIN_ID));
     }
 
     @Test
     public void findedBetweenInclusiveIsMatch() {
         List<Meal> betweenInclusiveMeal = service.getBetweenInclusive(LocalDate.of(2023, Month.JUNE, 29),
                 LocalDate.of(2023, Month.JUNE, 29), USER_ID);
-        assertMatch(betweenInclusiveMeal, userMealsOf2023Jun29);
+        assertMatch(betweenInclusiveMeal, sortByDateTimeReversed(userMealsOf2023Jun29));
     }
 
     @Test
     public void findedAllUserMealIsMatch() {
         List<Meal> meals = service.getAll(USER_ID);
-        assertMatch(meals, userMeals);
+        assertMatch(meals, sortByDateTimeReversed(userMeals));
     }
 
     @Test
