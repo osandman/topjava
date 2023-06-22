@@ -63,13 +63,13 @@ public class MealServiceTest {
     public void findedBetweenInclusiveIsMatch() {
         List<Meal> betweenInclusiveMeal = service.getBetweenInclusive(LocalDate.of(2023, Month.JUNE, 29),
                 LocalDate.of(2023, Month.JUNE, 29), USER_ID);
-        assertMatch(betweenInclusiveMeal, sortByDateTimeReversed(userMealsOf2023Jun29));
+        assertMatch(betweenInclusiveMeal, userMealsOf2023Jun29);
     }
 
     @Test
     public void findedAllUserMealIsMatch() {
         List<Meal> meals = service.getAll(USER_ID);
-        assertMatch(meals, sortByDateTimeReversed(userMeals));
+        assertMatch(meals, userMeals);
     }
 
     @Test
@@ -98,6 +98,7 @@ public class MealServiceTest {
         Meal expected = getNewMeal();
         expected.setId(newId);
         assertMatch(newMeal, expected);
+        assertMatch(service.get(newId, USER_ID), expected);
     }
 
     @Test

@@ -26,15 +26,9 @@ public class MealTestData {
     public static final Meal adminMeal2 = new Meal(START_MEAL_ID + 8, LocalDateTime.of(2023, Month.JUNE, 25, 13, 30), "Обед Admin", 1000);
     public static final Meal adminMeal3 = new Meal(START_MEAL_ID + 9, LocalDateTime.of(2023, Month.JUNE, 25, 20, 0), "Ужин Admin", 500);
 
-    public static final List<Meal> userMeals = new ArrayList<>(Arrays.asList(userMeal1, userMeal2, userMeal3,
-            userMeal4, userMeal5, userMeal6, userMeal7));
-    public static final List<Meal> userMealsOf2023Jun29 = new ArrayList<>(Arrays.asList(userMeal1, userMeal2, userMeal3));
-
-    public static List<Meal> sortByDateTimeReversed(List<Meal> meals) {
-        return meals.stream()
-                .sorted(Comparator.comparing(Meal::getDateTime).reversed())
-                .collect(Collectors.toList());
-    }
+    public static final List<Meal> userMeals = new ArrayList<>(Arrays.asList(userMeal7, userMeal6, userMeal5,
+            userMeal4, userMeal3, userMeal2, userMeal1));
+    public static final List<Meal> userMealsOf2023Jun29 = new ArrayList<>(Arrays.asList(userMeal3, userMeal2, userMeal1));
 
     public static Meal getNewMeal() {
         return new Meal(LocalDateTime.of(2023, Month.JANUARY, 1, 0, 0),
