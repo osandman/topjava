@@ -1,0 +1,15 @@
+DROP INDEX IF EXISTS meal_unique_user_datetime_idx;
+DROP INDEX IF EXISTS meal_idx;
+
+EXPLAIN ANALYZE
+SELECT *
+FROM meal
+WHERE user_id = 100000
+  AND date_time BETWEEN '2015-02-10' AND '2015-05-20'
+ORDER BY date_time DESC;
+
+EXPLAIN ANALYZE
+SELECT *
+FROM meal
+WHERE user_id = 100003
+ORDER BY date_time DESC;

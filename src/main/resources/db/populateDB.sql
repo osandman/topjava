@@ -1,5 +1,5 @@
 DELETE
-FROM meals;
+FROM meal;
 DELETE
 FROM user_role;
 DELETE
@@ -15,7 +15,7 @@ INSERT INTO user_role (role, user_id)
 VALUES ('USER', 100000),
        ('ADMIN', 100001);
 
-INSERT INTO meals (user_id, description, date_time, calories)
+INSERT INTO meal (user_id, description, date_time, calories)
 VALUES (100000, 'Завтрак', '2023-06-29 10:00', 500),
        (100000, 'Обед', '2023-06-29 13:00', 1000),
        (100000, 'Ужин', '2023-06-29 20:00', 500),
