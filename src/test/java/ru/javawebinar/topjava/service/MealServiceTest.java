@@ -53,11 +53,13 @@ public class MealServiceTest {
 
     @AfterClass
     public static void printAllDurations() {
-        System.out.println("*** Tests execution time ***");
+        String eol = System.lineSeparator();
+        StringBuilder builder = new StringBuilder();
         testsDuration.entrySet().stream()
                 .sorted(Map.Entry.comparingByValue())
-                .forEach(entry -> System.out.printf("%-" + maxLenTestName + "s - %d ms%s",
-                        entry.getKey(), entry.getValue(), System.lineSeparator()));
+                .forEach(entry -> builder.append(String.format("%-" + maxLenTestName + "s - %d ms%s",
+                        entry.getKey(), entry.getValue(), eol)));
+        log.info("{}*** Tests execution time ***{}{}", eol, eol, builder);
     }
 
     @Autowired
