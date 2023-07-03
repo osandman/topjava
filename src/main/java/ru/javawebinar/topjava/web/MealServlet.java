@@ -1,8 +1,12 @@
 package ru.javawebinar.topjava.web;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
+import org.springframework.core.env.AbstractEnvironment;
 import org.springframework.util.StringUtils;
+import ru.javawebinar.topjava.Profiles;
 import ru.javawebinar.topjava.model.Meal;
 import ru.javawebinar.topjava.web.meal.MealRestController;
 
@@ -11,10 +15,15 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.sql.Driver;
+import java.sql.DriverManager;
+import java.sql.SQLException;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.temporal.ChronoUnit;
+import java.util.Arrays;
+import java.util.Enumeration;
 import java.util.Objects;
 
 import static ru.javawebinar.topjava.util.DateTimeUtil.parseLocalDate;
@@ -24,17 +33,35 @@ public class MealServlet extends HttpServlet {
 
     private ConfigurableApplicationContext springContext;
     private MealRestController mealController;
+    private static final Logger log = LoggerFactory.getLogger(MealServlet.class);
 
     @Override
     public void init() {
+        System.setProperty(AbstractEnvironment.ACTIVE_PROFILES_PROPERTY_NAME, Profiles.getActiveDbProfile()
+                + ", " + Profiles.REPOSITORY_IMPLEMENTATION);
         springContext = new ClassPathXmlApplicationContext("spring/spring-app.xml", "spring/spring-db.xml");
+        log.info("Active profiles: {}", Arrays.stream(springContext.getEnvironment().getActiveProfiles()).toList());
         mealController = springContext.getBean(MealRestController.class);
     }
 
     @Override
     public void destroy() {
         springContext.close();
+        deregisterDrivers();
         super.destroy();
+    }
+
+    private static void deregisterDrivers() {
+        Enumeration<Driver> drivers = DriverManager.getDrivers();
+        while (drivers.hasMoreElements()) {
+            Driver currentDriver = drivers.nextElement();
+            try {
+                DriverManager.deregisterDriver(currentDriver);
+                log.info("Diver {} deregistered", currentDriver);
+            } catch (SQLException e) {
+                log.warn("Error deregistered driver {} - {}", currentDriver, e.getMessage());
+            }
+        }
     }
 
     @Override
