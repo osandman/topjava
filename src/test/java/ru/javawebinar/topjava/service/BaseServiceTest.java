@@ -1,28 +1,28 @@
 package ru.javawebinar.topjava.service;
 
 import org.junit.AfterClass;
-import org.junit.Before;
-import org.junit.BeforeClass;
 import org.junit.Rule;
 import org.junit.rules.Stopwatch;
 import org.junit.runner.Description;
 import org.junit.runner.RunWith;
 import org.slf4j.Logger;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.cache.CacheManager;
-import org.springframework.context.ApplicationContext;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.TestExecutionListeners;
 import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.context.jdbc.SqlConfig;
 import org.springframework.test.context.junit4.SpringRunner;
+import org.springframework.test.context.support.DependencyInjectionTestExecutionListener;
 import ru.javawebinar.topjava.ActiveDbProfileResolver;
 
-import java.util.Arrays;
 import java.util.concurrent.TimeUnit;
 
 import static org.slf4j.LoggerFactory.getLogger;
+import static org.springframework.test.context.TestExecutionListeners.MergeMode;
 
+@TestExecutionListeners(listeners = {CustomTestExecutionListener.class,
+        DependencyInjectionTestExecutionListener.class},
+        mergeMode = MergeMode.MERGE_WITH_DEFAULTS)
 @ContextConfiguration({
         "classpath:spring/spring-app.xml",
         "classpath:spring/spring-db.xml"
@@ -31,28 +31,8 @@ import static org.slf4j.LoggerFactory.getLogger;
 @Sql(scripts = "classpath:db/populateDB.sql", config = @SqlConfig(encoding = "UTF-8"))
 @ActiveProfiles(resolver = ActiveDbProfileResolver.class)
 public abstract class BaseServiceTest {
-
-    @Autowired
-    ApplicationContext appContext;
     private static final Logger log = getLogger("result");
-    private static boolean setupIsDone = false;
     private static final StringBuilder results = new StringBuilder();
-
-    @Autowired
-    private CacheManager cacheManager;
-
-    @Before
-    public void setup() {
-        if (this.getClass().getName().contains("User")) {
-            cacheManager.getCache("users").clear();
-        }
-        if (setupIsDone) {
-            return;
-        }
-        log.info("Active profiles: {}", Arrays.stream(appContext.getEnvironment().getActiveProfiles()).toList());
-        setupIsDone = true;
-    }
-
 
     @Rule
     // http://stackoverflow.com/questions/14892125/what-is-the-best-practice-to-determine-the-execution-time-of-the-bussiness-relev
