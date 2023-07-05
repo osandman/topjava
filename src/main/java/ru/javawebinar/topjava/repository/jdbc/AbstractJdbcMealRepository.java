@@ -8,26 +8,27 @@ import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
-import org.springframework.stereotype.Repository;
 import ru.javawebinar.topjava.model.Meal;
 import ru.javawebinar.topjava.repository.MealRepository;
 
 import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.util.Date;
 import java.util.List;
 
-@Repository
-public class JdbcMealRepository implements MealRepository {
+public abstract class AbstractJdbcMealRepository implements MealRepository {
+    protected static final RowMapper<Meal> ROW_MAPPER = BeanPropertyRowMapper.newInstance(Meal.class);
 
-    private static final RowMapper<Meal> ROW_MAPPER = BeanPropertyRowMapper.newInstance(Meal.class);
+    protected final JdbcTemplate jdbcTemplate;
 
-    private final JdbcTemplate jdbcTemplate;
+    protected final NamedParameterJdbcTemplate namedParameterJdbcTemplate;
 
-    private final NamedParameterJdbcTemplate namedParameterJdbcTemplate;
+    protected final SimpleJdbcInsert insertMeal;
 
-    private final SimpleJdbcInsert insertMeal;
+    protected boolean isHsqlDb;
 
     @Autowired
-    public JdbcMealRepository(JdbcTemplate jdbcTemplate, NamedParameterJdbcTemplate namedParameterJdbcTemplate) {
+    public AbstractJdbcMealRepository(JdbcTemplate jdbcTemplate, NamedParameterJdbcTemplate namedParameterJdbcTemplate) {
         this.insertMeal = new SimpleJdbcInsert(jdbcTemplate)
                 .withTableName("meal")
                 .usingGeneratedKeyColumns("id");
@@ -42,7 +43,8 @@ public class JdbcMealRepository implements MealRepository {
                 .addValue("id", meal.getId())
                 .addValue("description", meal.getDescription())
                 .addValue("calories", meal.getCalories())
-                .addValue("date_time", meal.getDateTime())
+                .addValue("date_time", isHsqlDb ? getDateFromLocalDateTime(meal.getDateTime())
+                        : meal.getDateTime())
                 .addValue("user_id", userId);
 
         if (meal.isNew()) {
@@ -81,6 +83,12 @@ public class JdbcMealRepository implements MealRepository {
     public List<Meal> getBetweenHalfOpen(LocalDateTime startDateTime, LocalDateTime endDateTime, int userId) {
         return jdbcTemplate.query(
                 "SELECT * FROM meal WHERE user_id=?  AND date_time >=  ? AND date_time < ? ORDER BY date_time DESC",
-                ROW_MAPPER, userId, startDateTime, endDateTime);
+                ROW_MAPPER, userId,
+                isHsqlDb ? getDateFromLocalDateTime(startDateTime) : startDateTime,
+                isHsqlDb ? getDateFromLocalDateTime(endDateTime) : endDateTime);
+    }
+
+    private Date getDateFromLocalDateTime(LocalDateTime dateTime) {
+        return Date.from(dateTime.atZone(ZoneId.systemDefault()).toInstant());
     }
 }
