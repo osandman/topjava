@@ -12,20 +12,16 @@ import ru.javawebinar.topjava.model.Meal;
 import ru.javawebinar.topjava.repository.MealRepository;
 
 import java.time.LocalDateTime;
-import java.time.ZoneId;
-import java.util.Date;
 import java.util.List;
 
 public abstract class AbstractJdbcMealRepository implements MealRepository {
-    protected static final RowMapper<Meal> ROW_MAPPER = BeanPropertyRowMapper.newInstance(Meal.class);
+    private static final RowMapper<Meal> ROW_MAPPER = BeanPropertyRowMapper.newInstance(Meal.class);
 
-    protected final JdbcTemplate jdbcTemplate;
+    private final JdbcTemplate jdbcTemplate;
 
-    protected final NamedParameterJdbcTemplate namedParameterJdbcTemplate;
+    private final NamedParameterJdbcTemplate namedParameterJdbcTemplate;
 
-    protected final SimpleJdbcInsert insertMeal;
-
-    protected boolean isHsqlDb;
+    private final SimpleJdbcInsert insertMeal;
 
     @Autowired
     public AbstractJdbcMealRepository(JdbcTemplate jdbcTemplate, NamedParameterJdbcTemplate namedParameterJdbcTemplate) {
@@ -43,8 +39,7 @@ public abstract class AbstractJdbcMealRepository implements MealRepository {
                 .addValue("id", meal.getId())
                 .addValue("description", meal.getDescription())
                 .addValue("calories", meal.getCalories())
-                .addValue("date_time", isHsqlDb ? getDateFromLocalDateTime(meal.getDateTime())
-                        : meal.getDateTime())
+                .addValue("date_time", convertDateTime(meal.getDateTime()))
                 .addValue("user_id", userId);
 
         if (meal.isNew()) {
@@ -60,6 +55,8 @@ public abstract class AbstractJdbcMealRepository implements MealRepository {
         }
         return meal;
     }
+
+    abstract <T extends Comparable<?>> T convertDateTime(LocalDateTime dateTime);
 
     @Override
     public boolean delete(int id, int userId) {
@@ -83,12 +80,6 @@ public abstract class AbstractJdbcMealRepository implements MealRepository {
     public List<Meal> getBetweenHalfOpen(LocalDateTime startDateTime, LocalDateTime endDateTime, int userId) {
         return jdbcTemplate.query(
                 "SELECT * FROM meal WHERE user_id=?  AND date_time >=  ? AND date_time < ? ORDER BY date_time DESC",
-                ROW_MAPPER, userId,
-                isHsqlDb ? getDateFromLocalDateTime(startDateTime) : startDateTime,
-                isHsqlDb ? getDateFromLocalDateTime(endDateTime) : endDateTime);
-    }
-
-    private Date getDateFromLocalDateTime(LocalDateTime dateTime) {
-        return Date.from(dateTime.atZone(ZoneId.systemDefault()).toInstant());
+                ROW_MAPPER, userId, convertDateTime(startDateTime), convertDateTime(endDateTime));
     }
 }

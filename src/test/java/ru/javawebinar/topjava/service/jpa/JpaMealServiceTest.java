@@ -1,9 +1,9 @@
-package ru.javawebinar.topjava.repository.jdbc;
+package ru.javawebinar.topjava.service.jpa;
 
 import org.springframework.test.context.ActiveProfiles;
 import ru.javawebinar.topjava.Profiles;
 import ru.javawebinar.topjava.service.MealServiceTest;
 
-@ActiveProfiles(Profiles.JDBC)
-public class JdbcMealRepositoryTest extends MealServiceTest {
+@ActiveProfiles(Profiles.JPA)
+public class JpaMealServiceTest extends MealServiceTest {
 }

@@ -8,7 +8,7 @@ import java.util.Arrays;
 
 import static org.slf4j.LoggerFactory.getLogger;
 
-public class CustomTestExecutionListener implements TestExecutionListener {
+public class LogTestExecutionListener implements TestExecutionListener {
     private static final Logger log = getLogger("result");
 
     @Override

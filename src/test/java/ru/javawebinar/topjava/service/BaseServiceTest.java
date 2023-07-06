@@ -20,8 +20,7 @@ import java.util.concurrent.TimeUnit;
 import static org.slf4j.LoggerFactory.getLogger;
 import static org.springframework.test.context.TestExecutionListeners.MergeMode;
 
-@TestExecutionListeners(listeners = {CustomTestExecutionListener.class,
-        DependencyInjectionTestExecutionListener.class},
+@TestExecutionListeners(listeners = {LogTestExecutionListener.class},
         mergeMode = MergeMode.MERGE_WITH_DEFAULTS)
 @ContextConfiguration({
         "classpath:spring/spring-app.xml",

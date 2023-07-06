@@ -22,7 +22,7 @@ public interface MealRepository {
     // ORDERED dateTime desc
     List<Meal> getBetweenHalfOpen(LocalDateTime startDateTime, LocalDateTime endDateTime, int userId);
 
-    default User getUser(int id, int userId) {
-        return null;
+    default Meal getMealWithUser(int id, int userId) {
+        throw new UnsupportedOperationException("Method has no implementation");
     }
 }

@@ -5,11 +5,19 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.stereotype.Repository;
 
+import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.util.Date;
+
 @Profile("hsqldb")
 @Repository
 public class JdbcHsqlMealRepository extends AbstractJdbcMealRepository {
     public JdbcHsqlMealRepository(JdbcTemplate jdbcTemplate, NamedParameterJdbcTemplate namedParameterJdbcTemplate) {
         super(jdbcTemplate, namedParameterJdbcTemplate);
-        isHsqlDb = true;
+    }
+
+    @Override
+    <T extends Comparable<?>> T convertDateTime(LocalDateTime dateTime) {
+        return (T) Date.from(dateTime.atZone(ZoneId.systemDefault()).toInstant());
     }
 }
