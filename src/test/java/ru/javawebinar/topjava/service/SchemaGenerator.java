@@ -31,19 +31,18 @@ public class SchemaGenerator extends AbstractServiceTest {
     }
 
     private void generateDdlScript(String filename, String entityPack) {
-        try (SessionFactoryImplementor implementor = entityManagerFactory.unwrap(SessionFactoryImplementor.class);
-             StandardServiceRegistry serviceRegistry = (StandardServiceRegistry) implementor
-                     .getServiceRegistry().getParentServiceRegistry()) {
+        SessionFactoryImplementor implementor = entityManagerFactory.unwrap(SessionFactoryImplementor.class);
+        StandardServiceRegistry serviceRegistry = (StandardServiceRegistry) implementor
+                .getServiceRegistry().getParentServiceRegistry();
 
-            MetadataSources metadataSources = new MetadataSources(serviceRegistry);
-            for (Class<?> clazz : getClasses(entityPack)) {
-                metadataSources.addAnnotatedClass(clazz);
-            }
-            Metadata metadata = metadataSources.buildMetadata();
-            SchemaExport schemaExport = new SchemaExport();
-            schemaExport.setFormat(true).setOutputFile(filename).setOverrideOutputFileContent();
-            schemaExport.execute(EnumSet.of(TargetType.SCRIPT), SchemaExport.Action.BOTH, metadata);
+        MetadataSources metadataSources = new MetadataSources(serviceRegistry);
+        for (Class<?> clazz : getClasses(entityPack)) {
+            metadataSources.addAnnotatedClass(clazz);
         }
+        Metadata metadata = metadataSources.buildMetadata();
+        SchemaExport schemaExport = new SchemaExport();
+        schemaExport.setFormat(true).setOutputFile(filename).setOverrideOutputFileContent();
+        schemaExport.execute(EnumSet.of(TargetType.SCRIPT), SchemaExport.Action.BOTH, metadata);
     }
 
     private static Set<Class<?>> getClasses(String packageName) {
