@@ -5,9 +5,6 @@ import org.springframework.ui.Model;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
 import ru.javawebinar.topjava.model.Meal;
-import ru.javawebinar.topjava.to.MealTo;
-import ru.javawebinar.topjava.util.MealsUtil;
-import ru.javawebinar.topjava.web.SecurityUtil;
 
 import javax.servlet.http.HttpServletRequest;
 import java.io.UnsupportedEncodingException;
@@ -15,7 +12,6 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.temporal.ChronoUnit;
-import java.util.List;
 
 import static ru.javawebinar.topjava.util.DateTimeUtil.parseLocalDate;
 import static ru.javawebinar.topjava.util.DateTimeUtil.parseLocalTime;
@@ -26,17 +22,13 @@ public class JspMealController extends AbstractMealController {
 
     @GetMapping
     public String getAll(Model model) {
-        log.info("get all meals");
-        List<MealTo> mealTos = MealsUtil.getTos(service.getAll(SecurityUtil.authUserId()),
-                SecurityUtil.authUserCaloriesPerDay());
-        model.addAttribute("meals", mealTos);
+        model.addAttribute("meals", getAllFromParent());
         return "meals";
     }
 
     @GetMapping("/{id}")
     public String get(@PathVariable Integer id, Model model) {
-        log.info("get meal");
-        model.addAttribute("meal", service.get(id, SecurityUtil.authUserId()));
+        model.addAttribute("meal", getFromParent(id));
         return "mealForm";
     }
 
@@ -50,8 +42,7 @@ public class JspMealController extends AbstractMealController {
 
     @GetMapping("/delete/{id}")
     public String delete(@PathVariable Integer id) {
-        log.info("delete meal");
-        service.delete(id, SecurityUtil.authUserId());
+        deleteFromParent(id);
         return "redirect:/meals";
     }
 
@@ -76,11 +67,9 @@ public class JspMealController extends AbstractMealController {
                 Integer.parseInt(request.getParameter("calories")));
         if (StringUtils.hasLength(request.getParameter("id"))) {
             meal.setId(Integer.parseInt(request.getParameter("id")));
-            log.info("update meal");
-            service.update(meal, SecurityUtil.authUserId());
+            updateFromParent(meal, Integer.parseInt(request.getParameter("id")));
         } else {
-            log.info("create meal");
-            service.create(meal, SecurityUtil.authUserId());
+            createFromParent(meal);
         }
         return "redirect:/meals";
     }
