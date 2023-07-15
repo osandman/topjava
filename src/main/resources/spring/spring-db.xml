@@ -69,6 +69,7 @@
     </beans>
 
     <beans profile="jpa,datajpa">
+        <bean id="metadataIntegratorProvider" class="ru.javawebinar.topjava.repository.MetadataIntegratorProvider" />
         <bean id="entityManagerFactory" class="org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean"
               p:dataSource-ref="dataSource"
               p:packagesToScan="ru.javawebinar.**.model">
@@ -90,6 +91,7 @@
                     <entry key="#{T(org.hibernate.cfg.AvailableSettings).HBM2DDL_SCRIPTS_CREATE_TARGET}" value="${TOPJAVA_ROOT}/config/ddl/create.ddl"/>
                     <entry key="#{T(org.hibernate.cfg.AvailableSettings).HBM2DDL_SCRIPTS_DROP_TARGET}" value="${TOPJAVA_ROOT}/config/ddl/drop.ddl"/>
                     <entry key="#{T(org.hibernate.cfg.AvailableSettings).HBM2DDL_AUTO}" value="create"/>
+                    <entry key="hibernate.integrator_provider" value-ref="metadataIntegratorProvider"/>
                 </map>
             </property>
 
