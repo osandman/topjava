@@ -14,6 +14,8 @@ import ru.javawebinar.topjava.model.Role;
 import ru.javawebinar.topjava.model.User;
 import ru.javawebinar.topjava.repository.UserRepository;
 
+import javax.validation.ConstraintViolationException;
+import javax.validation.Validator;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -30,42 +32,51 @@ public class JdbcUserRepository implements UserRepository {
     private final NamedParameterJdbcTemplate namedParameterJdbcTemplate;
 
     private final SimpleJdbcInsert insertUser;
+    private final Validator validator;
 
     @Autowired
-    public JdbcUserRepository(JdbcTemplate jdbcTemplate, NamedParameterJdbcTemplate namedParameterJdbcTemplate) {
+    public JdbcUserRepository(JdbcTemplate jdbcTemplate, NamedParameterJdbcTemplate namedParameterJdbcTemplate, Validator validator) {
         this.insertUser = new SimpleJdbcInsert(jdbcTemplate)
                 .withTableName("users")
                 .usingGeneratedKeyColumns("id");
 
         this.jdbcTemplate = jdbcTemplate;
         this.namedParameterJdbcTemplate = namedParameterJdbcTemplate;
+        this.validator = validator;
     }
 
     @Transactional
     @Override
     public User save(User user) {
-        BeanPropertySqlParameterSource parameterSource = new BeanPropertySqlParameterSource(user);
+        var validationResult = validator.validate(user);
+        if (!validationResult.isEmpty()) {
+            throw new ConstraintViolationException(validationResult);
+        }
 
+        BeanPropertySqlParameterSource parameterSource = new BeanPropertySqlParameterSource(user);
         if (user.isNew()) {
             Number newKey = insertUser.executeAndReturnKey(parameterSource);
             user.setId(newKey.intValue());
         } else if (namedParameterJdbcTemplate.update("""
-                   UPDATE users SET name=:name, email=:email, password=:password, 
+                   UPDATE users SET name=:name, email=:email, password=:password,
                    registered=:registered, enabled=:enabled, calories_per_day=:caloriesPerDay WHERE id=:id
-                """, parameterSource) == 0) {
+                """, parameterSource) != 0) {
+            deleteRoles(user.id());
+        } else {
             return null;
         }
-        insertOrUpdateRoles(user.getRoles().stream().toList(), user.id());
+        if (!user.getRoles().isEmpty()) {
+            insertRoles(new ArrayList<>(user.getRoles()), user.id());
+        }
         return user;
     }
 
-    private void insertOrUpdateRoles(List<Role> roles, int id) {
-        String sql = """
-                INSERT INTO user_role (user_id, role)
-                VALUES (?, ?)
-                ON CONFLICT (user_id, role) DO UPDATE
-                SET role=excluded.role
-                """;
+    private void deleteRoles(int id) {
+        jdbcTemplate.update("DELETE FROM user_role WHERE user_id=?", id);
+    }
+
+    private void insertRoles(List<Role> roles, int id) {
+        String sql = "INSERT INTO user_role (user_id, role) VALUES (?, ?)";
         jdbcTemplate.batchUpdate(sql,
                 new BatchPreparedStatementSetter() {
                     @Override
@@ -109,9 +120,9 @@ public class JdbcUserRepository implements UserRepository {
     }
 
     private void setUserRoles(User user) {
-        Set<Role> roles = jdbcTemplate.query("SELECT * FROM user_role WHERE user_id=?",
+        EnumSet<Role> roles = jdbcTemplate.query("SELECT * FROM user_role WHERE user_id=?",
                 rs -> {
-                    Set<Role> roleSet = new HashSet<>();
+                    EnumSet<Role> roleSet = EnumSet.noneOf(Role.class);
                     while (rs.next()) {
                         roleSet.add(Role.valueOf(rs.getString("role")));
                     }
@@ -124,7 +135,7 @@ public class JdbcUserRepository implements UserRepository {
     public List<User> getAll() {
         List<User> users = jdbcTemplate.query("SELECT * FROM users ORDER BY name, email", ROW_MAPPER);
         if (!users.isEmpty()) {
-            Map<Integer, Set<Role>> roles = jdbcTemplate.query("SELECT * FROM user_role",
+            Map<Integer, EnumSet<Role>> roles = jdbcTemplate.query("SELECT * FROM user_role",
                     JdbcUserRepository::getAllUserRoles);
             if (roles != null) {
                 users.forEach(user -> user.setRoles(roles.get(user.getId())));
@@ -133,18 +144,12 @@ public class JdbcUserRepository implements UserRepository {
         return users;
     }
 
-    private static Map<Integer, Set<Role>> getAllUserRoles(ResultSet rs) throws SQLException {
-        Map<Integer, Set<Role>> rolesById = new HashMap<>();
+    private static Map<Integer, EnumSet<Role>> getAllUserRoles(ResultSet rs) throws SQLException {
+        Map<Integer, EnumSet<Role>> rolesById = new HashMap<>();
         while (rs.next()) {
             int id = Integer.parseInt(rs.getString("user_id"));
             Role role = Role.valueOf(rs.getString("role"));
-            if (rolesById.get(id) == null) {
-                Set<Role> roles = new HashSet<>();
-                roles.add(role);
-                rolesById.put(id, roles);
-            } else {
-                rolesById.get(id).add(role);
-            }
+            rolesById.computeIfAbsent(id, rol -> EnumSet.noneOf(Role.class)).add(role);
         }
         return rolesById;
     }

@@ -1,5 +1,7 @@
 package ru.javawebinar.topjava.web.meal;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.util.StringUtils;
@@ -20,21 +22,25 @@ import static ru.javawebinar.topjava.util.DateTimeUtil.parseLocalTime;
 @RequestMapping(value = "/meals")
 public class JspMealController extends AbstractMealController {
 
+    @Override
+    Logger getLog() {
+        return LoggerFactory.getLogger(getClass());
+    }
+
     @GetMapping
     public String getAll(Model model) {
-        model.addAttribute("meals", getAllFromParent());
+        model.addAttribute("meals", getAll());
         return "meals";
     }
 
     @GetMapping("/{id}")
     public String get(@PathVariable Integer id, Model model) {
-        model.addAttribute("meal", getFromParent(id));
+        model.addAttribute("meal", get(id));
         return "mealForm";
     }
 
     @GetMapping("/new")
     public String create(@ModelAttribute Meal meal) {
-        log.info("create meal");
         meal.setDateTime(LocalDateTime.now().truncatedTo(ChronoUnit.MINUTES));
         meal.setCalories(100);
         return "mealForm";
@@ -42,13 +48,12 @@ public class JspMealController extends AbstractMealController {
 
     @GetMapping("/delete/{id}")
     public String delete(@PathVariable Integer id) {
-        deleteFromParent(id);
+        remove(id);
         return "redirect:/meals";
     }
 
     @GetMapping("/filter")
     public String filter(HttpServletRequest request, Model model) {
-        log.info("filter meal");
         LocalDate startDate = parseLocalDate(request.getParameter("startDate"));
         LocalDate endDate = parseLocalDate(request.getParameter("endDate"));
         LocalTime startTime = parseLocalTime(request.getParameter("startTime"));
@@ -67,9 +72,9 @@ public class JspMealController extends AbstractMealController {
                 Integer.parseInt(request.getParameter("calories")));
         if (StringUtils.hasLength(request.getParameter("id"))) {
             meal.setId(Integer.parseInt(request.getParameter("id")));
-            updateFromParent(meal, Integer.parseInt(request.getParameter("id")));
+            update(meal, Integer.parseInt(request.getParameter("id")));
         } else {
-            createFromParent(meal);
+            saveNew(meal);
         }
         return "redirect:/meals";
     }
