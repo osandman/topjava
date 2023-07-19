@@ -1,7 +1,5 @@
 package ru.javawebinar.topjava.web.meal;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.util.StringUtils;
@@ -22,11 +20,6 @@ import static ru.javawebinar.topjava.util.DateTimeUtil.parseLocalTime;
 @RequestMapping(value = "/meals")
 public class JspMealController extends AbstractMealController {
 
-    @Override
-    Logger getLog() {
-        return LoggerFactory.getLogger(getClass());
-    }
-
     @GetMapping
     public String getAll(Model model) {
         model.addAttribute("meals", getAll());
@@ -34,7 +27,7 @@ public class JspMealController extends AbstractMealController {
     }
 
     @GetMapping("/{id}")
-    public String get(@PathVariable Integer id, Model model) {
+    public String get(@PathVariable int id, Model model) {
         model.addAttribute("meal", get(id));
         return "mealForm";
     }
@@ -47,7 +40,7 @@ public class JspMealController extends AbstractMealController {
     }
 
     @GetMapping("/delete/{id}")
-    public String delete(@PathVariable Integer id) {
+    public String delete(@PathVariable int id) {
         remove(id);
         return "redirect:/meals";
     }
@@ -65,14 +58,14 @@ public class JspMealController extends AbstractMealController {
 
     @PostMapping
     public String save(HttpServletRequest request) throws UnsupportedEncodingException {
-        request.setCharacterEncoding("UTF-8");
         Meal meal = new Meal(
                 LocalDateTime.parse(request.getParameter("dateTime")),
                 request.getParameter("description"),
                 Integer.parseInt(request.getParameter("calories")));
         if (StringUtils.hasLength(request.getParameter("id"))) {
-            meal.setId(Integer.parseInt(request.getParameter("id")));
-            update(meal, Integer.parseInt(request.getParameter("id")));
+            int id = Integer.parseInt(request.getParameter("id"));
+            meal.setId(id);
+            update(meal, id);
         } else {
             saveNew(meal);
         }
