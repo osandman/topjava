@@ -1,12 +1,17 @@
 package ru.javawebinar.topjava;
 
+import org.springframework.util.LinkedMultiValueMap;
+import org.springframework.util.MultiValueMap;
 import ru.javawebinar.topjava.model.Meal;
 
 import java.time.Month;
 import java.time.temporal.ChronoUnit;
+import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 
 import static java.time.LocalDateTime.of;
+import static java.util.List.*;
 import static ru.javawebinar.topjava.model.AbstractBaseEntity.START_SEQ;
 
 public class MealTestData {
@@ -15,6 +20,12 @@ public class MealTestData {
     public static final int NOT_FOUND = 10;
     public static final int MEAL1_ID = START_SEQ + 3;
     public static final int ADMIN_MEAL_ID = START_SEQ + 10;
+    public static final MultiValueMap<String, String> dateTimeRange = new LinkedMultiValueMap<>() {{
+        put("startDate", List.of("2020-01-30T00:00:00"));
+        put("endDate", List.of("2020-01-30T00:00:00"));
+        put("startTime", List.of("2023-07-01T00:00:00"));
+        put("endTime", List.of("2023-07-29T23:59:59"));
+    }};
 
     public static final Meal meal1 = new Meal(MEAL1_ID, of(2020, Month.JANUARY, 30, 10, 0), "Завтрак", 500);
     public static final Meal meal2 = new Meal(MEAL1_ID + 1, of(2020, Month.JANUARY, 30, 13, 0), "Обед", 1000);
