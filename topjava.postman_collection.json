@@ -1,0 +1,325 @@
+{
+  "info": {
+    "_postman_id": "3901dbeb-f578-4c37-9cc6-3a8957f36e17",
+    "name": "topjava",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "_exporter_id": "27653419"
+  },
+  "item": [
+    {
+      "name": "rest",
+      "item": [
+        {
+          "name": "users",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/rest/admin/users",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "rest",
+                "admin",
+                "users"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "user by id",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  ""
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/rest/admin/users/{{userId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "rest",
+                "admin",
+                "users",
+                "{{userId}}"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "meal",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/rest/meals/{{mealId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "rest",
+                "meals",
+                "{{mealId}}"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "all meals",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/rest/meals",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "rest",
+                "meals"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "delete meal",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/rest/meals/{{mealId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "rest",
+                "meals",
+                "{{mealId}}"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "create meal",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n    \"id\": null,\r\n    \"dateTime\": \"2023-07-25T20:45:00\",\r\n    \"description\": \"Новый обед1\",\r\n    \"calories\": 123,\r\n    \"user\": null\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/rest/meals",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "rest",
+                "meals"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "update meal",
+          "request": {
+            "method": "PUT",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n    \"id\": 100003,\r\n    \"dateTime\": \"2020-01-31T20:00:00\",\r\n    \"description\": \"Ужин обновлен\",\r\n    \"calories\": 550,\r\n    \"user\": null\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/rest/meals/{{mealId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "rest",
+                "meals",
+                "{{mealId}}"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "meals between date_time",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/rest/meals/filter?startDateTime=2020-01-01T00:00:00&endDateTime=2023-07-29T00:00:00",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "rest",
+                "meals",
+                "filter"
+              ],
+              "query": [
+                {
+                  "key": "startDateTime",
+                  "value": "2020-01-01T00:00:00"
+                },
+                {
+                  "key": "endDateTime",
+                  "value": "2023-07-29T00:00:00"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "meals between",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/rest/meals/filter?startDate=2023-07-25&startTime=14:00",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "rest",
+                "meals",
+                "filter"
+              ],
+              "query": [
+                {
+                  "key": "startDate",
+                  "value": "2023-07-25"
+                },
+                {
+                  "key": "startTime",
+                  "value": "14:00"
+                },
+                {
+                  "key": "endDate",
+                  "value": "2020-07-30",
+                  "disabled": true
+                },
+                {
+                  "key": "endTime",
+                  "value": "21:00",
+                  "disabled": true
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "css",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/resources/css/style.css",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "resources",
+                "css",
+                "style.css"
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "ui",
+      "item": [
+        {
+          "name": "ui users",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept-Language",
+                "value": "ru",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}topjava/users",
+              "host": [
+                "{{baseUrl}}topjava"
+              ],
+              "path": [
+                "users"
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    }
+  ],
+  "event": [
+    {
+      "listen": "prerequest",
+      "script": {
+        "type": "text/javascript",
+        "exec": [
+          ""
+        ]
+      }
+    },
+    {
+      "listen": "test",
+      "script": {
+        "type": "text/javascript",
+        "exec": [
+          ""
+        ]
+      }
+    }
+  ],
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "http://localhost:8080/topjava"
+    },
+    {
+      "key": "userId",
+      "value": "100000"
+    },
+    {
+      "key": "mealId",
+      "value": "100006"
+    }
+  ]
+}

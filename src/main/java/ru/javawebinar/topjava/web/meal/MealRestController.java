@@ -1,6 +1,5 @@
 package ru.javawebinar.topjava.web.meal;
 
-import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -8,12 +7,13 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 import ru.javawebinar.topjava.model.Meal;
 import ru.javawebinar.topjava.to.MealTo;
+import ru.javawebinar.topjava.util.formatter.TopJavaDateTimeFormat;
+import ru.javawebinar.topjava.util.formatter.TopJavaDateTimeFormat.Type;
 
 import java.net.URI;
-import java.time.LocalDateTime;
+import java.time.LocalDate;
+import java.time.LocalTime;
 import java.util.List;
-
-import static org.springframework.format.annotation.DateTimeFormat.ISO;
 
 @RestController
 @RequestMapping(value = MealRestController.REST_MEALS_URL, produces = MediaType.APPLICATION_JSON_VALUE)
@@ -50,24 +50,24 @@ public class MealRestController extends AbstractMealController {
 
     @Override
     @PutMapping(value = "/{id}", consumes = MediaType.APPLICATION_JSON_VALUE)
+    @ResponseStatus(HttpStatus.NO_CONTENT)
     public void update(@RequestBody Meal meal, @PathVariable int id) {
         super.update(meal, id);
     }
 
     @GetMapping("/filter")
     public List<MealTo> getBetween(@RequestParam(required = false)
-                                   @DateTimeFormat(iso = ISO.DATE_TIME)
-                                   LocalDateTime startDate,
+                                   @TopJavaDateTimeFormat(type = Type.DATE)
+                                   LocalDate startDate,
                                    @RequestParam(required = false)
-                                   @DateTimeFormat(iso = ISO.DATE_TIME)
-                                   LocalDateTime startTime,
+                                   @TopJavaDateTimeFormat(type = Type.TIME)
+                                   LocalTime startTime,
                                    @RequestParam(required = false)
-                                   @DateTimeFormat(iso = ISO.DATE_TIME)
-                                   LocalDateTime endDate,
+                                   @TopJavaDateTimeFormat(type = Type.DATE)
+                                   LocalDate endDate,
                                    @RequestParam(required = false)
-                                   @DateTimeFormat(iso = ISO.DATE_TIME)
-                                   LocalDateTime endTime) {
-        return super.getBetween(startDate.toLocalDate(), startTime.toLocalTime(),
-                endDate.toLocalDate(), endTime.toLocalTime());
+                                   @TopJavaDateTimeFormat(type = Type.TIME)
+                                   LocalTime endTime) {
+        return super.getBetween(startDate, startTime, endDate, endTime);
     }
 }

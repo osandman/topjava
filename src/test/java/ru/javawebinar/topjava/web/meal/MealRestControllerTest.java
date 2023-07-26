@@ -5,10 +5,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
-import ru.javawebinar.topjava.MatcherFactory;
 import ru.javawebinar.topjava.model.Meal;
 import ru.javawebinar.topjava.service.MealService;
-import ru.javawebinar.topjava.to.MealTo;
 import ru.javawebinar.topjava.util.MealsUtil;
 import ru.javawebinar.topjava.util.exception.NotFoundException;
 import ru.javawebinar.topjava.web.AbstractControllerTest;
@@ -29,14 +27,14 @@ class MealRestControllerTest extends AbstractControllerTest {
     private static final String REST_MEALS_URL = MealRestController.REST_MEALS_URL + "/";
 
     @Autowired
-    MealService mealService;
+    private MealService mealService;
 
     @Test
     void delete() throws Exception {
         perform(MockMvcRequestBuilders.delete(REST_MEALS_URL + meal1.getId()))
                 .andDo(print())
                 .andExpect(status().isNoContent());
-        assertThrows(NotFoundException.class, () -> mealService.get(meal1.id(), SecurityUtil.authUserId()));
+        assertThrows(NotFoundException.class, () -> mealService.get(meal1.id(), USER_ID));
     }
 
     @Test
@@ -52,7 +50,7 @@ class MealRestControllerTest extends AbstractControllerTest {
         int newId = created.id();
         newMeal.setId(newId);
         MEAL_MATCHER.assertMatch(created, newMeal);
-        MEAL_MATCHER.assertMatch(mealService.get(newId, SecurityUtil.authUserId()), newMeal);
+        MEAL_MATCHER.assertMatch(mealService.get(newId, USER_ID), newMeal);
     }
 
     @Test
@@ -62,8 +60,8 @@ class MealRestControllerTest extends AbstractControllerTest {
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(JsonUtil.writeValue(updMeal)))
                 .andDo(print())
-                .andExpect(status().isOk());
-        MEAL_MATCHER.assertMatch(mealService.get(updMeal.id(), SecurityUtil.authUserId()),
+                .andExpect(status().isNoContent());
+        MEAL_MATCHER.assertMatch(mealService.get(updMeal.id(), USER_ID),
                 updMeal);
     }
 
@@ -74,11 +72,10 @@ class MealRestControllerTest extends AbstractControllerTest {
                 .andDo(print())
                 .andExpect(status().isOk())
                 .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
-                .andExpect(MatcherFactory.usingIgnoringFieldsComparator(MealTo.class)
-                        .contentJson(MealsUtil.getTos(mealService.getBetweenInclusive(
-                                        LocalDate.of(2020, Month.JANUARY, 30),
-                                        LocalDate.of(2020, Month.JANUARY, 30), USER_ID),
-                                SecurityUtil.authUserCaloriesPerDay())));
+                .andExpect(MEAL_TO_MATCHER.contentJson(MealsUtil.getTos(mealService.getBetweenInclusive(
+                                LocalDate.of(2020, Month.JANUARY, 30),
+                                LocalDate.of(2020, Month.JANUARY, 30), USER_ID),
+                        SecurityUtil.authUserCaloriesPerDay())));
     }
 
     @Test
@@ -96,7 +93,6 @@ class MealRestControllerTest extends AbstractControllerTest {
                 .andDo(print())
                 .andExpect(status().isOk())
                 .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
-                .andExpect(MatcherFactory.usingIgnoringFieldsComparator(MealTo.class)
-                        .contentJson(MealsUtil.getTos(meals, SecurityUtil.authUserCaloriesPerDay())));
+                .andExpect(MEAL_TO_MATCHER.contentJson(MealsUtil.getTos(meals, SecurityUtil.authUserCaloriesPerDay())));
     }
 }
