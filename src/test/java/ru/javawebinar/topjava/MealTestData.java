@@ -22,10 +22,10 @@ public class MealTestData {
     public static final int MEAL1_ID = START_SEQ + 3;
     public static final int ADMIN_MEAL_ID = START_SEQ + 10;
     public static final MultiValueMap<String, String> dateTimeRange = new LinkedMultiValueMap<>() {{
-        put("startDate", List.of("2020-01-30"));
-        put("startTime", List.of("00:00"));
-        put("endDate", List.of("2020-01-30"));
-        put("endTime", List.of("23:59"));
+        put("startDate", List.of("2020-01-31"));
+        put("startTime", List.of("13:00"));
+        put("endDate", List.of("2020-01-31"));
+        put("endTime", List.of("21:00"));
     }};
 
     public static final Meal meal1 = new Meal(MEAL1_ID, of(2020, Month.JANUARY, 30, 10, 0), "Завтрак", 500);

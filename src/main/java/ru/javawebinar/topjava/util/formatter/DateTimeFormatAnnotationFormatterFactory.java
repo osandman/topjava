@@ -11,7 +11,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-public class CustomDateTimeFormatAnnotationFormatterFactory
+public class DateTimeFormatAnnotationFormatterFactory
         implements AnnotationFormatterFactory<TopJavaDateTimeFormat> {
     @Override
     public Set<Class<?>> getFieldTypes() {
@@ -31,10 +31,10 @@ public class CustomDateTimeFormatAnnotationFormatterFactory
     private Formatter<?> getFormatter(TopJavaDateTimeFormat annotation, Class<?> fieldType) {
         switch (annotation.type()) {
             case DATE -> {
-                return new CustomDateFormatter();
+                return new DateFormatter();
             }
             case TIME -> {
-                return new CustomTimeFormatter();
+                return new TimeFormatter();
             }
         }
         return null;

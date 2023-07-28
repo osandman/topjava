@@ -8,10 +8,10 @@ import java.util.Locale;
 
 import static ru.javawebinar.topjava.util.DateTimeUtil.DATE_FORMATTER;
 
-public class CustomDateFormatter implements Formatter<LocalDate> {
+public class DateFormatter implements Formatter<LocalDate> {
     @Override
     public LocalDate parse(String date, Locale locale) throws ParseException {
-        return LocalDate.parse(date, DATE_FORMATTER.localizedBy(locale));
+        return LocalDate.parse(date, DATE_FORMATTER);
     }
 
     @Override

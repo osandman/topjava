@@ -6,18 +6,18 @@
        http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd http://www.springframework.org/schema/mvc http://www.springframework.org/schema/mvc/spring-mvc.xsd">
 
     <bean class="ru.javawebinar.topjava.web.json.JacksonObjectMapper" id="objectMapper" factory-method="getMapper"/>
-    <bean id="customDateFormatter" class="ru.javawebinar.topjava.util.formatter.CustomDateFormatter"/>
-    <bean id="customTimeFormatter" class="ru.javawebinar.topjava.util.formatter.CustomTimeFormatter"/>
-    <bean id="customDateTimeFormatAnnotationFormatterFactory"
-          class="ru.javawebinar.topjava.util.formatter.CustomDateTimeFormatAnnotationFormatterFactory"/>
+    <bean id="dateFormatter" class="ru.javawebinar.topjava.util.formatter.DateFormatter"/>
+    <bean id="timeFormatter" class="ru.javawebinar.topjava.util.formatter.TimeFormatter"/>
+<!--    <bean id="dateTimeFormatAnnotationFormatterFactory"-->
+<!--          class="ru.javawebinar.topjava.util.formatter.DateTimeFormatAnnotationFormatterFactory"/>-->
 
 
     <bean id="conversionService" class="org.springframework.format.support.FormattingConversionServiceFactoryBean">
         <property name="formatters">
             <set>
-                <ref bean="customDateFormatter"/>
-                <ref bean="customTimeFormatter"/>
-                <ref bean="customDateTimeFormatAnnotationFormatterFactory"/>
+                <ref bean="dateFormatter"/>
+                <ref bean="timeFormatter"/>
+<!--                <ref bean="dateTimeFormatAnnotationFormatterFactory"/>-->
             </set>
         </property>
     </bean>

@@ -55,18 +55,19 @@ public class MealRestController extends AbstractMealController {
         super.update(meal, id);
     }
 
+    @Override
     @GetMapping("/filter")
     public List<MealTo> getBetween(@RequestParam(required = false)
-                                   @TopJavaDateTimeFormat(type = Type.DATE)
+//                                   @TopJavaDateTimeFormat(type = Type.DATE)
                                    LocalDate startDate,
                                    @RequestParam(required = false)
-                                   @TopJavaDateTimeFormat(type = Type.TIME)
+//                                   @TopJavaDateTimeFormat(type = Type.TIME)
                                    LocalTime startTime,
                                    @RequestParam(required = false)
-                                   @TopJavaDateTimeFormat(type = Type.DATE)
+//                                   @TopJavaDateTimeFormat(type = Type.DATE)
                                    LocalDate endDate,
                                    @RequestParam(required = false)
-                                   @TopJavaDateTimeFormat(type = Type.TIME)
+//                                   @TopJavaDateTimeFormat(type = Type.TIME)
                                    LocalTime endTime) {
         return super.getBetween(startDate, startTime, endDate, endTime);
     }
