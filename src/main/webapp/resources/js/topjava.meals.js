@@ -1,29 +1,22 @@
-const mealAjaxUrl = "ui/meals/";
+const mealAjaxUrl = "profile/meals/";
 
 const ctx = {
-    ajaxUrl: mealAjaxUrl
-};
+    ajaxUrl: mealAjaxUrl,
+    updateTable: updateWithFilter
+}
 
-function updateWithFilter(filterData) {
+function updateWithFilter() {
     $.ajax({
-        url: ctx.ajaxUrl + "filter",
+        url: mealAjaxUrl + "filter",
         type: "GET",
-        data: filterData
-    }).done(function (data) {
-        updateTableWithData(data);
-    });
+        data: $("#filter").serialize()
+    }).done(updateTableWithData);
 }
 
 $("#filter").submit(function () {
-    let data = $(this).serialize();
-    updateWithFilter(data);
+    updateWithFilter();
     successNoty("Filtered");
     return false;
-});
-
-$("#filter button[type='reset']").click(function () {
-    $("#filter").get(0).reset();
-    updateTable();
 });
 
 $(function () {

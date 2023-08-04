@@ -33,18 +33,17 @@ function deleteRow(id) {
 }
 
 function updateTable() {
-    if ($("#filter").length) {
-        updateWithFilter($("#filter").serialize());
-    } else {
-        $.get(ctx.ajaxUrl, function (data) {
-            updateTableWithData(data);
-        });
-    }
+    ctx.updateTable();
 }
 
 function updateTableWithData(data) {
     ctx.datatableApi.clear().rows.add(data).draw();
 }
+
+$("#filter button[type='reset']").click(function () {
+    $("#filter").get(0).reset();
+    updateTable();
+});
 
 function save() {
     $.ajax({
