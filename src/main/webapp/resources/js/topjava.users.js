@@ -8,6 +8,23 @@ const ctx = {
     }
 }
 
+function setEnable(checkBox, id) {
+    let enabled = checkBox.is(":checked")
+    $.ajax({
+        url: userAjaxUrl + id,
+        type: "POST",
+        data: "enable=" + enabled
+    }).done(function () {
+        checkBox.closest("tr").attr("user-enabled", enabled)
+        // updateTable();
+        successNoty(enabled);
+    }).fail($(checkBox).prop("checked", !enabled));
+}
+
+// function setEnable() {
+//     enable($(".enable"), $(".enable").closest('tr').attr("id"))
+// }
+
 // $(document).ready(function () {
 $(function () {
     makeEditable(
