@@ -18,7 +18,7 @@ public class ModelInterceptor implements HandlerInterceptor {
         if (modelAndView != null && !modelAndView.isEmpty()) {
             AuthorizedUser authorizedUser = SecurityUtil.safeGet();
             if (authorizedUser != null) {
-                modelAndView.getModelMap().addAttribute("userTo", authorizedUser.getUserTo());
+//                modelAndView.getModelMap().addAttribute("userTo", authorizedUser.getUserTo());
             }
         }
     }
